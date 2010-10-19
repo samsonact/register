@@ -1,0 +1,7 @@
+host has many interfaces
+
+interfaces belong to many vlans
+
+interface/vlan has many addresses.
+
+address belongs to a subnet.

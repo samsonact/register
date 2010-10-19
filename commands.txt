@@ -1,0 +1,17 @@
+addhost hostname
+delhost hostid
+
+addint intname,hostid[,nexthop]
+delint intid
+
+addvlan name[,number]
+delvlan vlanid
+
+addsubint interfaceid,vlanid
+delsubint subintid
+
+addaddress name,subint,subnet,address
+deladdress addressid
+
+showallhosts
+showhost hostid
