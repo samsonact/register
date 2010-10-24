@@ -49,12 +49,62 @@ if ( $_GET['action'] == 'showallhosts' ) {
 
 } else if ( $_GET['action'] == 'addinterface' ) {
 
-
 	echo "about to add interface\n";
         $query = "INSERT INTO interface VALUES (DEFAULT,"."'".$_GET['intname']."',".$_GET['hostid'].") returning *";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
         pg_free_result($result);
 
 
+} else if ( ( $_GET['action'] == 'addl2link' ) && isset($_GET['h1'],$_GET['h2']) ) {
+	echo 'pick interfaces';
+	$query = "select * from interface where host=".$_GET['h1'].";";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	echo '<form name="new link" action="cmd.php" method="get">';
+        echo ' <input type="submit" value="Submit" />';
+        echo ' <input type="hidden" name="action" value="addl2link" />';
+	echo ' <select name="i1"> ';
+	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+		echo ' <option value="'.$line['id'].'"> '.$line['name'].' </option>';
+	}
+	echo ' </select> ';
+	$query = "select * from interface where host=".$_GET['h2'].";";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+        echo ' <input type="hidden" name="action" value="addl2link" />';
+	echo ' <select name="i2"> ';
+	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+		echo ' <option value="'.$line['id'].'"> '.$line['name'].' </option>';
+	}
+	echo ' </select> ';
+	echo ' </form> ';
+	
+} else if ( ( $_GET['action'] == 'addl2link' ) && isset($_GET['i1'],$_GET['i2']) ) {
+	$query = "insert into link values ( default, '".$_GET['link_name']."') returning id;";
+	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	$line = pg_fetch_array($result,null, PGSQL_ASSOC);
+
+	$query = "insert into l2 values ( default, '".$line['id']."' , '".$_GET['i1']."' ) ;  insert into l2 values ( default, '".$line['id']."' , '".$_GET['i2']."' ) ; ";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+        $line = pg_fetch_array($result,null, PGSQL_ASSOC);	
+
+} else if ( $_GET['action'] == 'addl2link' ) {
+	$query = "select * from host;";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	echo '<form name="new link" action="cmd.php" metho="get">';
+	echo 'Interface name: <input type="text" name="intname" /> <br/>';
+        echo ' <input type="submit" value="Submit" />';
+        echo ' <input type="hidden" name="action" value="addl2link" />';
+	echo ' <select name="h1"> ';
+	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+		echo ' <option value="'.$line['id'].'"> '.$line['name'].' </option>';
+	}
+        echo "</select>";
+	$query = "select * from host;";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	echo ' <select name="h2"> ';
+	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+		echo ' <option value="'.$line['id'].'"> '.$line['name'].' </option>';
+	}
+        echo "</select>";
+        echo "</form>";
 }
 ?>
