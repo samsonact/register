@@ -69,7 +69,6 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	echo ' </select> ';
 	$query = "select * from interface where host=".$_GET['h2'].";";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-        echo ' <input type="hidden" name="action" value="addl2link" />';
 	echo ' <select name="i2"> ';
 	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 		echo ' <option value="'.$line['id'].'"> '.$line['name'].' </option>';
