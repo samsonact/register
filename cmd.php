@@ -23,12 +23,22 @@ function showallhosts(){
 }
 
 function showhost($hostid){
-	$query = "select * from interface where host=".$hostid;
+	$query = "select  host.name as linkhostname, host.id as linkhostid, q4.name as linkinterface, q4.intname from host right outer join\n";
+	$query .=		"(select interface.id as i2id, interface.name, interface.host as i2host, q3.* from interface right outer join\n";
+	$query .=			"(select l2.id as l2bid, l2.link as l2blink, l2.interface as l2bint, q2.* from l2 right outer join\n";
+	$query .=			"	(select l2.id as l2aid, l2.link as l2alink, l2.interface as l2aint, q1.intid, q1.intname from l2 right outer join\n";
+	$query .=			"		(select interface.id as intid ,interface.name as intname from interface where interface.host=".$hostid.") as q1\n";
+	$query .=			"	on l2.interface = q1.intid) as q2\n";
+	$query .=		"	on l2.link = q2.l2alink and l2.id != q2.l2aid) as q3\n";
+	$query .=		"on interface.id = q3.l2bint) as q4\n";
+	$query .=	"on host.id = q4.i2host;\n";
+#	echo $query."\n";
 	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	echo "<table>\n";
+	echo "<tr><td>interface</td><td>linked host</td><td>linked interface</td></tr>\n";
 	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 		echo "\t<tr>\n";
-		echo "<td>".$line['id']."</td> <td><a href=cmd.php?id=".$line['id'].">".$line['name']."</a></td>\n";
+		echo "<td><a href=cmd.php?id=".$line['id'].">".$line['intname']."</a></td><td><a href=cmd.php?action=showhost&hostid=".$line['linkhostid'].">".$line['linkhostname']."</a></td><td>".$line['linkinterface']."</td>\n";
 		echo "\t</tr>\n";
 	}
 	echo "</table>";
