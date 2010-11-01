@@ -1,8 +1,9 @@
 <?php
-$dbconn = pg_connect("dbname=ip2") 
-	or die('Could not connect: ' . pg_last_error());
+function footer(){
+echo '<a href="cmd.php?Action=showallhosts"> show all hosts </a>';
+}
 
-if ( $_GET['action'] == 'showallhosts' ) {
+function showallhosts(){
 	$query = 'SELECT * FROM host';
 	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
@@ -19,19 +20,10 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	echo ' <input type="submit" value="Submit" />';
 	echo ' <input type="hidden" name="action" value="addhost" />';
 	echo "</form>";
-} else if ( $_GET['action'] == 'delhost' ) {
-	echo "about to delete host by id\n";
-	//XXXX check for hostid being set and not stupid
-        $query = 'DELETE FROM host WHERE id='.$_GET['hostid'].";";
-        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-        pg_free_result($result);
-} else if  ( $_GET['action'] == 'addhost' ) {
-	echo "about to add host\n";
-        $query = "INSERT INTO host VALUES (DEFAULT,"."'".$_GET['hostname']."'".") returning *";
-        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-        pg_free_result($result);
-} else if ( $_GET['action'] == 'showhost' ) {
-	$query = "select * from interface where host=".$_GET['hostid'];
+}
+
+function showhost($hostid){
+	$query = "select * from interface where host=".$hostid;
 	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	echo "<table>\n";
 	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
@@ -41,19 +33,39 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	}
 	echo "</table>";
 	echo '<form name="new host" action="cmd.php" method="get">';
-	echo 'Interface name: <input type="text" name="intname" /> <br/>';
+	echo 'Add interface name: <input type="text" name="intname" />';
 	echo ' <input type="submit" value="Submit" />';
 	echo ' <input type="hidden" name="action" value="addinterface" />';
-	echo ' <input type="hidden" name="hostid" value="'.$_GET['hostid'].'" />';
+	echo ' <input type="hidden" name="hostid" value="'.$hostid.'" />';
 	echo "</form>";
+}
 
+$dbconn = pg_connect("dbname=ip2") 
+	or die('Could not connect: ' . pg_last_error());
+
+if ( $_GET['action'] == 'showallhosts' ) {
+	showallhosts();
+} else if ( $_GET['action'] == 'delhost' ) {
+	echo "about to delete host by id\n";
+	//XXXX check for hostid being set and not stupid
+        $query = 'DELETE FROM host WHERE id='.$_GET['hostid'].";";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+        pg_free_result($result);
+	showallhosts();
+} else if  ( $_GET['action'] == 'addhost' ) {
+	echo "about to add host\n";
+        $query = "INSERT INTO host VALUES (DEFAULT,"."'".$_GET['hostname']."'".") returning *";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+        pg_free_result($result);
+	showallhosts();
+} else if ( $_GET['action'] == 'showhost' ) {
+	showhost($_GET['hostid']);
 } else if ( $_GET['action'] == 'addinterface' ) {
-
 	echo "about to add interface\n";
         $query = "INSERT INTO interface VALUES (DEFAULT,"."'".$_GET['intname']."',".$_GET['hostid'].") returning *";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
         pg_free_result($result);
-
+	showhost($_GET['hostid']);
 
 } else if ( ( $_GET['action'] == 'addl2link' ) && isset($_GET['h1'],$_GET['h2']) ) {
 	echo 'pick interfaces';
@@ -89,7 +101,7 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	$query = "select * from host;";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	echo '<form name="new link" action="cmd.php" metho="get">';
-	echo 'Interface name: <input type="text" name="intname" /> <br/>';
+	echo 'New Link Name: <input type="text" name="link_name" />';
         echo ' <input type="submit" value="Submit" />';
         echo ' <input type="hidden" name="action" value="addl2link" />';
 	echo ' <select name="h1"> ';
