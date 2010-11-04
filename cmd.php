@@ -66,6 +66,25 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	$query = "insert into physicallink values ( default, '".$line['id']."' , '".$_GET['i1']."' ) ;  insert into physicallink values ( default, '".$line['id']."' , '".$_GET['i2']."' ) ; ";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
         $line = pg_fetch_array($result,null, PGSQL_ASSOC);	
+#DS working on this one
+} else if ( ( $_GET['action'] == 'addlink' ) && isset($_GET['i1']) ) {
+
+#	$query = "select * from interface where host=".$_GET['h1'].";";
+#	$query = "SELECT * from interface i1 where i1.id not in (select link from physicallink );";
+	$query = "SELECT i1.id as intid, i1.name as intname, h1.name as hostname from interface i1, host h1 where h1.id = i1.host and i1.id not in (select link from physicallink );";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+        echo '<form name="new link" action="cmd.php" method="get">';
+        echo ' <input type="submit" value="Submit" />';
+        echo ' <input type="hidden" name="action" value="addlink" />';
+        echo ' <input type="hidden" name="i1" value="'.$_GET['i1'].'" />';
+
+        echo ' <select name="i2"> ';
+        while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+                echo ' <option value="'.$line['intid'].'"> '.$line['hostname'].":".$line['intname'].' </option>';
+        }
+        echo ' </select> ';
+        echo ' </form> ';
 
 } else if ( $_GET['action'] == 'addlink' ) {
 	$query = "select * from host;";

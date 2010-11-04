@@ -15,7 +15,7 @@ function showhost($hostid){
         echo "<tr><td>interface</td><td>linked host</td><td>linked interface</td></tr>\n";
         while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
                 echo "\t<tr>\n";
-                echo "<td><a href=cmd.php?action=showint&intid=".$line['intid']."&hostid=".$hostid.">".$line['intname']."</a></td><td><a href=cmd.php?action=showhost&hostid=".$line['linkhostid'].">".$line['linkhostname']."</a></td><td>".$line['linkinterface']."</td><td><a href=cmd.php?action=dellink&linkid=".$line['l2aid']."&hostid=".$hostid.">delete link</a></td><td><a href=cmd.php?action=delint&intid=".$line['intid']."&hostid=".$hostid.">delete interface</a></td></td>\n";
+                echo "<td><a href=cmd.php?action=showint&intid=".$line['intid']."&hostid=".$hostid.">".$line['intname']."</a></td><td><a href=cmd.php?action=showhost&hostid=".$line['linkhostid'].">".$line['linkhostname']."</a></td><td>".$line['linkinterface']."</td><td><a href=cmd.php?action=dellink&linkid=".$line['l2aid']."&hostid=".$hostid.">delete link</a></td><td><a href=cmd.php?action=delint&intid=".$line['intid']."&hostid=".$hostid.">delete interface</a></td><td><a href=cmd.php?action=addlink&i1=".$line['intid'].">newlink</a></td>\n";
                 echo "\t</tr>\n";
         }
         echo "</table>";
