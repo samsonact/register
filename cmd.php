@@ -69,9 +69,7 @@ if ( $_GET['action'] == 'showallhosts' ) {
 #DS working on this one
 } else if ( ( $_GET['action'] == 'addlink' ) && isset($_GET['i1']) ) {
 
-#	$query = "select * from interface where host=".$_GET['h1'].";";
-#	$query = "SELECT * from interface i1 where i1.id not in (select link from physicallink );";
-	$query = "SELECT i1.id as intid, i1.name as intname, h1.name as hostname from interface i1, host h1 where h1.id = i1.host and i1.id not in (select link from physicallink );";
+	$query = "SELECT i1.id as intid, i1.name as intname, h1.name as hostname from interface i1, host h1 where h1.id = i1.host and i1.id not in (select interface from physicallink );";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
         echo '<form name="new link" action="cmd.php" method="get">';
