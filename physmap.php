@@ -28,5 +28,12 @@ print ('<?xml version="1.0" standalone="no"?>'."\n")
 		print ('</g>'."\n");
 		print ('<text  font-size="1" x="'.$arr[xpos].'" y="'.$arr[ypos].'">'.$arr[name].'</text>');
 	}
+	$query = "SELECT pmi1.xpos as xpos1, pmi1.ypos as ypos1, pmi2.xpos as xpos2, pmi2.ypos as ypos2, pl1.link as link from physmapinterface pmi1, physmapinterface pmi2, physicallink pl1, physicallink pl2 where pmi1.id = pl1.interface and pmi2.id = pl2.interface and pl1.link = pl2.link and pl1.id < pl2.id;";
+        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+	while ( $arr = pg_fetch_array($result, NULL , PGSQL_ASSOC) ) {
+		print ("<line x1=\"".$arr['xpos1']."\" y1=\"".$arr['ypos1']."\" x2=\"".$arr['xpos2']."\" y2=\"".$arr['ypos2']."\" stroke=\"red\" stroke-width=\"0.020\"/>\n");
+	}
+
 ?> 
 </svg>
