@@ -36,6 +36,7 @@ if ( $_GET['action'] == 'showallhosts' ) {
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
         pg_free_result($result);
 	showhost($_GET['hostid']);
+	echo "<a href=cmd.php?action=showallhosts>showallhosts</a>";
 
 } else if ( ( $_GET['action'] == 'addlink' ) && isset($_GET['h1'],$_GET['h2']) ) {
 	echo 'pick interfaces';
@@ -108,7 +109,7 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	$query = "select * from interface where id=".$_GET['intid'].";";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-		echo  $line['name'];
+		echo  $line['name'].'<a href="cmd.php?action=addsubint&intid='.$line['id'].'"> Add subint </a>';
 	}
 	echo '<form name="changeint" action="cmd.php" method="get">';
 	echo 'change interface name: <input type="text" name="intname" /> ';
@@ -129,6 +130,7 @@ if ( $_GET['action'] == 'showallhosts' ) {
 		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		echo "<h1> deleted interface </h1>";
 		showhost($_GET['hostid']);
+		echo "<a href=cmd.php?action=showallhosts>showallhosts</a>";
 	}
 } else if ( $_GET['action'] == 'dellink' ) {
 	if (isset($_GET['linkid'])) {
@@ -136,6 +138,15 @@ if ( $_GET['action'] == 'showallhosts' ) {
 		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		echo "<h1> deleted link </h1>";
 		showhost($_GET['hostid']);
+		echo "<a href=cmd.php?action=showallhosts>showallhosts</a>";
+
 	}
+} else if ( $_GET['action'] == 'addsubint' ) {
+	##XXX do vlan and and intid check
+	echo "about to add subint\n";
+	$query = "insert into subint values ( default,".$_GET['intid'].",default );";
+	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	echo "added subint\n";
+
 }
 ?>

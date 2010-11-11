@@ -24,7 +24,7 @@ print ('<?xml version="1.0" standalone="no"?>'."\n")
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	while ( $arr = pg_fetch_array($result, NULL , PGSQL_ASSOC) ) {
 		print ('<g transform="translate('."$arr[xpos] $arr[ypos]".') rotate(0) ">');
-		print ('<a xlink:href="cmd.php?action=showhost&amp;hostid='.$arr['id'].'">'."\n".'<circle cx="'."0".'" cy="'."0".'" r="'."0.5".'" fill="green" stroke="green" stroke-width="0.010"  /></a>');
+		print ('<a xlink:href="cmd.php?action=showint&amp;intid='.$arr['id']."&amp;hostid=".$arr['host'].'">'."\n".'<circle cx="'."0".'" cy="'."0".'" r="'."0.5".'" fill="green" stroke="green" stroke-width="0.010"  /></a>');
 		print ('</g>'."\n");
 		print ('<text  font-size="1" x="'.$arr[xpos].'" y="'.$arr[ypos].'">'.$arr[name].'</text>');
 	}
