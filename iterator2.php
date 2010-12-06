@@ -46,7 +46,7 @@ while ($arr = pg_fetch_array ($result1, NULL, PGSQL_ASSOC))
         $FX = $FX + (1 / ($DX * $DX + $DY * $DY)) * ($DX / sqrt ($DX * $DX + $DY * $DY)) * $REPULSION;
         $FY = $FY + (1 / ($DX * $DX + $DY * $DY)) * ($DY / sqrt ($DX * $DX + $DY * $DY)) * $REPULSION;
       }
-	$query = "SELECT vm1.xpos, vm1.ypos from vlanmapvlan vm1, subint s1, interface i1 where vm1.id = s1.vlan and s1.interface = i1.id and i1.host = ".$arr['id'].";";
+$query = "SELECT vm1.xpos, vm1.ypos from vlanmapvlan vm1, subint s1, interface i1 where vm1.id = s1.vlan and s1.interface = i1.id and i1.host = ".$arr['id'].";";
 
 	##echo $query;
 	$result4 = pg_query($query) or die('Query failed: ' . pg_last_error());
@@ -87,8 +87,8 @@ while ($arr = pg_fetch_array ($result1, NULL, PGSQL_ASSOC)) {
 		$DX = ($arr['xpos'] - $arr2['xpos']);
 		$DY = ($arr['ypos'] - $arr2['ypos']);
                 $LN = sqrt(($DX*$DX)+($DY*$DY));
-                $FX = $FX - $INTTENSION * ($LN - $STICKLENGTH + 2* $INTLENGTH) * $DX/$LN;
-                $FY = $FY - $INTTENSION * ($LN - $STICKLENGTH + 2* $INTLENGTH) * $DY/$LN;
+                $FX = $FX - $INTTENSION * ($LN - $STICKLENGTH ) * $DX/$LN;
+                $FY = $FY - $INTTENSION * ($LN - $STICKLENGTH ) * $DY/$LN;
 	}
 
 	echo "<tr><td>ID ".$arr['id']."</td><td> FX $FX </td><td>FY $FY </td><td>xpos".$arr['xpos']."</td><td> ypos ".$arr['ypos']."</td></tr> \n";
