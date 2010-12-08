@@ -6,7 +6,7 @@
 <table>
 <?php
 
-$TENSION = 50;
+$TENSION = 10;
 $INTTENSION = 10;
 $STICKLENGTH = 20;
 $INTLENGTH = 2;
@@ -87,8 +87,8 @@ while ($arr = pg_fetch_array ($result1, NULL, PGSQL_ASSOC)) {
 		$DX = ($arr['xpos'] - $arr2['xpos']);
 		$DY = ($arr['ypos'] - $arr2['ypos']);
                 $LN = sqrt(($DX*$DX)+($DY*$DY));
-                $FX = $FX - $INTTENSION * ($LN - $STICKLENGTH ) * $DX/$LN;
-                $FY = $FY - $INTTENSION * ($LN - $STICKLENGTH ) * $DY/$LN;
+                $FX = $FX - $TENSION * ($LN - $STICKLENGTH ) * $DX/$LN;
+                $FY = $FY - $TENSION * ($LN - $STICKLENGTH ) * $DY/$LN;
 	}
 
 	echo "<tr><td>ID ".$arr['id']."</td><td> FX $FX </td><td>FY $FY </td><td>xpos".$arr['xpos']."</td><td> ypos ".$arr['ypos']."</td></tr> \n";
