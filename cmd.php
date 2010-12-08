@@ -106,10 +106,10 @@ if ( $_GET['action'] == 'showallhosts' ) {
         echo "</select>";
         echo "</form>";
 } else if ( $_GET['action'] == 'showint' ) {
-	$query = " select i1.name as iname, b.name as aname, b.vlan,b.subintid as subintid  from interface i1 left join (SELECT s1.id as subintid, * from address a1 right outer join subint s1 on a1.subint = s1.id ) as b on i1.id = b.interface where i1.id=".$_GET['intid'].";";
+	$query = " select i1.name as iname, b.name as aname, b.vlan,b.subintid as subintid, v.name as vname  from vlan v, interface i1 left join (SELECT s1.id as subintid, * from address a1 right outer join subint s1 on a1.subint = s1.id ) as b on i1.id = b.interface where v.id = b.vlan and i1.id=".$_GET['intid'].";";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-		echo  $line['iname']." ".$line['vlan']." <a href=cmd.php?action=changevlan&subint=".$line['subintid'].">change vlan</a>  <a href=cmd.php?action=delsubint&subint=".$line['subintid'].">delete subint</a><br>\n";
+		echo  $line['iname']." ".$line['vname']." <a href=cmd.php?action=changevlan&subint=".$line['subintid'].">change vlan</a>  <a href=cmd.php?action=delsubint&subint=".$line['subintid'].">delete subint</a><br>\n";
 	}
 	echo  '<a href="cmd.php?action=addsubint&intid='.$_GET['intid'].'"> Add subint </a>';
 	echo '<form name="changeint" action="cmd.php" method="get">';
