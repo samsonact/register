@@ -106,11 +106,29 @@ if ( $_GET['action'] == 'showallhosts' ) {
         echo "</select>";
         echo "</form>";
 } else if ( $_GET['action'] == 'showint' ) {
-	$query = " select i1.name as iname, b.name as aname, b.vlan,b.subintid as subintid, v.name as vname  from vlan v, interface i1 left join (SELECT s1.id as subintid, * from address a1 right outer join subint s1 on a1.subint = s1.id ) as b on i1.id = b.interface where v.id = b.vlan and i1.id=".$_GET['intid'].";";
+	$query = " select i1.name as iname, b.name as aname, b.aid as aid, b.address as address, b.subnet as subnet, b.vlan,b.subintid as subintid, v.name as vname  from vlan v, interface i1 left join (SELECT s1.id as subintid, a1.id as aid, * from address a1 right outer join subint s1 on a1.subint = s1.id ) as b on i1.id = b.interface where v.id = b.vlan and i1.id=".$_GET['intid'].";";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-		echo  $line['iname']." ".$line['vname']." <a href=cmd.php?action=changevlan&subint=".$line['subintid'].">change vlan</a>  <a href=cmd.php?action=delsubint&subint=".$line['subintid'].">delete subint</a><br>\n";
+	$query2 = "select * from address where subint is NULL;";
+	$result2 = pg_query($query2) or die('Query failed: ' . pg_last_error());
+	$intchoice='<select name="addressid">';
+	while ($line = pg_fetch_array($result2, null, PGSQL_ASSOC)) {
+		$intchoice.='<option value="'.$line['id'].'"> '.$line['name']." ".$line['address'].' </option>';
 	}
+	$intchoice.='</select>';
+	echo '<table border="1">';
+	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+		echo  "<tr><td>".$line['iname']."</td><td>".$line['vname']."</td><td>".$line['address']."</td><td><a href=cmd.php?action=changevlan&subint=".$line['subintid'].">change vlan</a> </td><td><a href=cmd.php?action=delsubint&subint=".$line['subintid'].">delete subint</a></td><td>";
+		if ($line['aid']) echo "<a href=cmd.php?action=unlinkaddress&addressid=".$line['aid'].">unlink address</a>";
+		###choose address####
+		echo '</td><td><form name="add address" action="cmd.php" method="get">';
+		echo '<input type="submit" value="submit"/>';
+		echo '<input type="hidden" name="action" value="linkaddress" />';
+		echo '<input type="hidden" name="subint" value="'.$line['subintid'].'" />';
+		echo $intchoice;
+		echo '</form>';
+		echo "</td></tr>\n";
+	}
+	echo '</table>';
 	echo  '<a href="cmd.php?action=addsubint&intid='.$_GET['intid'].'"> Add subint </a>';
 	echo '<form name="changeint" action="cmd.php" method="get">';
 	echo 'change interface name: <input type="text" name="intname" /> ';
@@ -118,7 +136,31 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	echo '<input type="hidden" name="action" value="changeint" />';
 	echo '<input type="hidden" name="intid" value="'.$_GET['intid'].'" />';
 	echo "</form>";
+	echo '<form name="addaddress" action="cmd.php" method="get">';
+	echo 'name: <input type="text" name="name" />';
+	echo 'address: <input type="text" name="address" />';
+	echo '<input type="hidden" name="action" value="addaddress" \>';
+	echo '<input type="submit" value="Submit" />';
+	echo '</form>';
 	echo "<a href=cmd.php?action=showhost&hostid=".$_GET['hostid']."> back to host </a>";
+} else if ( $_GET['action'] == 'unlinkaddress' ) {
+	if (isset($_GET['addressid'])) {
+		echo "about to unlink address \n";
+		$query="update address set subint=NULL where id=".$_GET['addressid'].";";
+		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	}
+} else if ( $_GET['action'] == 'linkaddress' ) {
+	if (isset($_GET['addressid'])) {
+		echo "about to link address \n";
+		$query="update address set subint=".$_GET['subint']." where id=".$_GET['addressid'].";";
+		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	}
+} else if ( $_GET['action'] == 'addaddress' ) {
+	if (isset($_GET['address'])) {
+		echo "add address\n";
+		$query="insert into address values (default,'".$_GET['name']."',null,null,'".$_GET['address']."');";
+		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	}
 } else if ( $_GET['action'] == 'changeint' ) {
 	if (isset($_GET['intid'],$_GET['intname'])) {
 		echo "about to update interface\n";
