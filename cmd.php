@@ -3,6 +3,7 @@ function footer(){
 	echo '<a href="cmd.php?Action=showallhosts"> show all hosts </a>';
 }
 require("fn/showhostname.php");
+require("fn/showintname.php");
 require("fn/showallhosts.php");
 require("fn/showhost.php");
 $dbconn = pg_connect("dbname=ip2") 
@@ -106,7 +107,14 @@ if ( $_GET['action'] == 'showallhosts' ) {
         echo "</select>";
         echo "</form>";
 } else if ( $_GET['action'] == 'showint' ) {
-	$query = " select i1.name as iname, b.name as aname, b.aid as aid, b.address as address, b.subnet as subnet, b.vlan,b.subintid as subintid, v.name as vname  from vlan v, interface i1 left join (SELECT s1.id as subintid, a1.id as aid, * from address a1 right outer join subint s1 on a1.subint = s1.id ) as b on i1.id = b.interface where v.id = b.vlan and i1.id=".$_GET['intid'].";";
+	echo '<h1>';
+	showhostname($_GET['hostid']);
+	echo " ";
+	showintname($_GET['intid']);
+	echo '</h1>';
+	#$query = " select i1.name as iname, b.name as aname, b.aid as aid, b.address as address, b.subnet as subnet, b.vlan,b.subintid as subintid, v.name as vname  from vlan v, interface i1 left join (SELECT s1.id as subintid, a1.id as aid, * from address a1 right outer join subint s1 on a1.subint = s1.id ) as b on i1.id = b.interface where v.id = b.vlan and i1.id=".$_GET['intid'].";";
+	$query = "select c.*, i1.* from interface i1 left join ( select b.*, v.name as vname from vlan v right join	( SELECT s1.id as subintid, s1.interface, a1.id as aid, a1.name as aname, a1.address,  s1.vlan as vid from address a1 right outer join subint s1 on a1.subint = s1.id ) as b on v.id = b.vid ) as c on c.interface = i1.id where i1.id=".$_GET['intid'].";";
+	#echo $query;
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	$query2 = "select * from address where subint is NULL;";
 	$result2 = pg_query($query2) or die('Query failed: ' . pg_last_error());
@@ -117,7 +125,7 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	$intchoice.='</select>';
 	echo '<table border="1">';
 	while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-		echo  "<tr><td>".$line['iname']."</td><td>".$line['vname']."</td><td>".$line['address']."</td><td><a href=cmd.php?action=changevlan&subint=".$line['subintid'].">change vlan</a> </td><td><a href=cmd.php?action=delsubint&subint=".$line['subintid'].">delete subint</a></td><td>";
+		echo  "<tr><td>".$line['subintid']."</td><td>".$line['iname']."</td><td>".$line['vname']."</td><td>".$line['address']."</td><td><a href=cmd.php?action=changevlan&subint=".$line['subintid'].">change vlan</a> </td><td><a href=cmd.php?action=delsubint&subint=".$line['subintid'].">delete subint</a></td><td>";
 		if ($line['aid']) echo "<a href=cmd.php?action=unlinkaddress&addressid=".$line['aid'].">unlink address</a>";
 		###choose address####
 		echo '</td><td><form name="add address" action="cmd.php" method="get">';
@@ -137,7 +145,7 @@ if ( $_GET['action'] == 'showallhosts' ) {
 	echo '<input type="hidden" name="intid" value="'.$_GET['intid'].'" />';
 	echo "</form>";
 	echo '<form name="addaddress" action="cmd.php" method="get">';
-	echo 'name: <input type="text" name="name" />';
+	echo 'New address: name: <input type="text" name="name" />';
 	echo 'address: <input type="text" name="address" />';
 	echo '<input type="hidden" name="action" value="addaddress" \>';
 	echo '<input type="submit" value="Submit" />';

@@ -16,7 +16,9 @@ function showallhosts(){
         echo ' <input type="submit" value="Submit" />';
         echo ' <input type="hidden" name="action" value="addhost" />';
         echo "</form>";
-	echo "<a href=physmap.php>Physical Map</a>";
-	echo "<a href=iterator.php>Physical Map Iterator</a>";
+	echo "<a href=physmap.php>Physical Map</a> ";
+	echo "<a href=iterator.php>Physical Map Iterator</a> ";
+	echo "<a href=vlanmap.php>VLAN Map</a> ";
+	echo "<a href=iterator2.php>VLAN Map Iterator</a> ";
 }
 ?>

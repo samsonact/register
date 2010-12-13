@@ -9,7 +9,7 @@ function showhost($hostid){
         $query .=               "       on physicallink.link = q2.l2alink and physicallink.id != q2.l2aid) as q3\n";
         $query .=               "on interface.id = q3.l2bint) as q4\n";
         $query .=       "on host.id = q4.i2host;\n";
-#       echo $query."\n";
+       ##echo $query."\n";
         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
         echo "<table>\n";
         echo "<tr><td>interface</td><td>linked host</td><td>linked interface</td></tr>\n";
